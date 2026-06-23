@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import workoutsRoutes from './workouts.routes.js';
 
 const router = Router();
 
@@ -8,5 +9,8 @@ router.get('/api/health', async (req, res) => {
     status: 'ok'
   });
 });
+
+// Workout routes
+router.use('/api', workoutsRoutes);
 
 export default router;

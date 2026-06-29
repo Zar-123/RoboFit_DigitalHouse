@@ -1,0 +1,5 @@
+node_modules
+.env
+.vscode
+stitch_robofit
+**/dist/

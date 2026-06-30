@@ -9,6 +9,7 @@ function App() {
   const [workoutRefreshKey, setWorkoutRefreshKey] = useState(0);
   const [sesionRefreshKey, setSesionRefreshKey] = useState(0);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
+  const [selectedSesion, setSelectedSesion] = useState(null);
   const [feedback, setFeedback] = useState('');
 
   const showFeedback = (message) => {
@@ -19,143 +20,190 @@ function App() {
   };
 
   return (
-    <main style={styles.page}>
-      <header style={styles.header}>
-        <div>
-          <h1 style={styles.title}>RoboFit</h1>
-          <p style={styles.subtitle}>Gestión de Workout Logs y Sesiones con React + Vite.</p>
-        </div>
-        <nav style={styles.nav}>
-          <NavLink
-            to="/workouts"
-            end
-            style={({ isActive }) => ({
-              ...styles.navLink,
-              ...(isActive ? styles.navLinkActive : {}),
-            })}
-          >
-            Workouts
-          </NavLink>
-          <NavLink
-            to="/sesiones"
-            style={({ isActive }) => ({
-              ...styles.navLink,
-              ...(isActive ? styles.navLinkActive : {}),
-            })}
-          >
-            Sesiones
-          </NavLink>
-        </nav>
-      </header>
+    <div style={styles.page}>
+      <main style={styles.container}>
+        <header style={styles.header}>
+          <div style={styles.brand}>
+            <p style={styles.brandCaption}>RoboFit</p>
+            <h1 style={styles.brandTitle}>Registro de actividad</h1>
+            <p style={styles.brandSubtitle}>Gestión de workout logs y sesiones con un estilo visual consistente.</p>
+          </div>
+          <nav style={styles.nav}>
+            <NavLink
+              to="/workouts"
+              end
+              style={({ isActive }) => (isActive ? styles.navActive : styles.navItem)}
+            >
+              Workouts
+            </NavLink>
+            <NavLink
+              to="/sesiones"
+              style={({ isActive }) => (isActive ? styles.navActive : styles.navItem)}
+            >
+              Sesiones
+            </NavLink>
+          </nav>
+        </header>
 
-      {feedback && <p style={styles.feedback}>{feedback}</p>}
+        {feedback && (
+          <div style={styles.feedback}>{feedback}</div>
+        )}
 
-      <Routes>
-        <Route path="/" element={<Navigate to="/workouts" replace />} />
-        <Route
-          path="/workouts"
-          element={
-            <section>
-              <h2 style={styles.sectionTitle}>Workout Logs</h2>
-              <div style={styles.grid}>
-                <WorkoutLogsForm
-                  selectedWorkout={selectedWorkout}
-                  onSaved={(message) => {
-                    setWorkoutRefreshKey((value) => value + 1);
-                    setSelectedWorkout(null);
-                    showFeedback(message);
-                  }}
-                  onCancel={() => setSelectedWorkout(null)}
-                />
-                <WorkoutLogsList
-                  refreshKey={workoutRefreshKey}
-                  onEdit={(log) => setSelectedWorkout(log)}
-                  onDeleted={() => {
-                    setWorkoutRefreshKey((value) => value + 1);
-                    showFeedback('Workout eliminado con éxito.');
-                  }}
-                />
-              </div>
-            </section>
-          }
-        />
-        <Route
-          path="/sesiones"
-          element={
-            <section>
-              <h2 style={styles.sectionTitle}>Sesiones</h2>
-              <div style={styles.grid}>
-                <SesionForm onCreated={() => setSesionRefreshKey((value) => value + 1)} />
-                <SesionList refreshKey={sesionRefreshKey} />
-              </div>
-            </section>
-          }
-        />
-      </Routes>
-    </main>
+        <Routes>
+          <Route path="/" element={<Navigate to="/workouts" replace />} />
+          <Route
+            path="/workouts"
+            element={
+              <section className="grid gap-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-[#1a1d10]">Workout Logs</h2>
+                  <span className="rounded-full bg-[#d4ff00] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[#5f7400]">
+                    Entrenamiento
+                  </span>
+                </div>
+                <div className="grid gap-4 lg:grid-cols-[minmax(320px,1fr)_minmax(320px,1fr)]">
+                  <WorkoutLogsForm
+                    selectedWorkout={selectedWorkout}
+                    onSaved={(message) => {
+                      setWorkoutRefreshKey((value) => value + 1);
+                      setSelectedWorkout(null);
+                      showFeedback(message);
+                    }}
+                    onCancel={() => setSelectedWorkout(null)}
+                  />
+                  <WorkoutLogsList
+                    refreshKey={workoutRefreshKey}
+                    onEdit={(log) => setSelectedWorkout(log)}
+                    onDeleted={() => {
+                      setWorkoutRefreshKey((value) => value + 1);
+                      showFeedback('Workout eliminado con éxito.');
+                    }}
+                  />
+                </div>
+              </section>
+            }
+          />
+          <Route
+            path="/sesiones"
+            element={
+              <section className="grid gap-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-[#1a1d10]">Sesiones</h2>
+                  <span className="rounded-full bg-[#d4ff00] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[#5f7400]">
+                    Planificación
+                  </span>
+                </div>
+                <div className="grid gap-4 lg:grid-cols-[minmax(320px,1fr)_minmax(320px,1fr)]">
+                  <SesionForm
+                    selectedSesion={selectedSesion}
+                    onSaved={(message) => {
+                      setSesionRefreshKey((value) => value + 1);
+                      setSelectedSesion(null);
+                      showFeedback(message);
+                    }}
+                    onCancel={() => setSelectedSesion(null)}
+                  />
+                  <SesionList
+                    refreshKey={sesionRefreshKey}
+                    onEdit={(session) => setSelectedSesion(session)}
+                    onDeleted={(message) => {
+                      setSesionRefreshKey((value) => value + 1);
+                      showFeedback(message);
+                    }}
+                  />
+                </div>
+              </section>
+            }
+          />
+        </Routes>
+      </main>
+    </div>
   );
 }
 
+export default App;
+
 const styles = {
   page: {
-    fontFamily: 'sans-serif',
-    padding: 24,
-    backgroundColor: '#f3f7fb',
     minHeight: '100vh',
+    background: 'linear-gradient(180deg, #f9fbe5 0%, #f4f5df 100%)',
+    fontFamily: "Inter, sans-serif",
+  },
+  container: {
+    margin: '0 auto',
+    minHeight: '100vh',
+    maxWidth: 1024,
+    padding: '24px 20px',
   },
   header: {
-    marginBottom: 28,
+    marginBottom: 24,
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 16,
+    borderRadius: 24,
+    border: '1px solid #e8ead4',
+    backgroundColor: '#fff',
+    padding: 20,
+    boxShadow: '0 4px 12px rgba(15,23,42,0.05)',
   },
-  title: {
+  brand: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 6,
+  },
+  brandCaption: {
+    fontSize: 12,
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    color: '#536600',
     margin: 0,
-    fontSize: 28,
   },
-  subtitle: {
-    marginTop: 6,
-    color: '#4b5563',
+  brandTitle: {
+    margin: 0,
+    fontSize: 22,
+    fontWeight: 700,
+    color: '#1a1d10',
+  },
+  brandSubtitle: {
+    margin: 0,
+    fontSize: 14,
+    color: '#444932',
   },
   nav: {
     display: 'flex',
-    gap: 12,
-    marginTop: 16,
-    flexWrap: 'wrap',
+    gap: 8,
   },
-  navLink: {
+  navItem: {
+    display: 'inline-block',
+    padding: '8px 14px',
+    borderRadius: 999,
+    border: '1px solid #e8ead4',
+    backgroundColor: '#f4f5df',
+    color: '#0058bc',
+    fontWeight: 700,
     textDecoration: 'none',
-    color: '#2563eb',
-    padding: '8px 12px',
-    borderRadius: 8,
-    border: '1px solid transparent',
-    transition: 'background-color 0.2s ease, border-color 0.2s ease',
   },
-  navLinkActive: {
-    backgroundColor: '#2563eb',
-    color: '#fff',
-    borderColor: '#1d4ed8',
-  },
-  section: {
-    marginTop: 28,
-  },
-  sectionTitle: {
-    marginTop: 0,
-    marginBottom: 12,
-    fontSize: 18,
-    color: '#1f2937',
+  navActive: {
+    display: 'inline-block',
+    padding: '8px 14px',
+    borderRadius: 999,
+    border: '1px solid #d4ff00',
+    backgroundColor: '#d4ff00',
+    color: '#5f7400',
+    fontWeight: 700,
+    textDecoration: 'none',
   },
   feedback: {
-    margin: '0 0 16px',
+    marginBottom: 16,
+    borderRadius: 16,
+    border: '1px solid #b7e4b7',
+    backgroundColor: '#e8f7e8',
     padding: '12px 16px',
-    backgroundColor: '#d1fae5',
-    color: '#065f46',
-    borderRadius: 10,
-    border: '1px solid #10b981',
-  },
-  grid: {
-    display: 'grid',
-    gap: 16,
-    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-    alignItems: 'start',
+    fontWeight: 700,
+    color: '#2b5d2b',
   },
 };
-
-export default App;

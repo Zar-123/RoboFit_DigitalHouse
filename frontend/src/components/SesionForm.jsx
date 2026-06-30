@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import sesionesService from '../services/sesiones.service.js';
 
 const initialForm = {
@@ -9,10 +9,29 @@ const initialForm = {
   fecha: '',
 };
 
-function SesionForm({ onCreated }) {
+function SesionForm({ selectedSesion = null, onSaved, onCreated, onCancel }) {
   const [formData, setFormData] = useState(initialForm);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const loadSelectedSesion = () => {
+    if (!selectedSesion) {
+      setFormData(initialForm);
+      return;
+    }
+
+    setFormData({
+      nombre: selectedSesion.nombre || '',
+      deporte: selectedSesion.deporte || '',
+      duracionMinutos: selectedSesion.duracionMinutos ?? '',
+      nivel: selectedSesion.nivel || '',
+      fecha: selectedSesion.fecha ? selectedSesion.fecha.slice(0, 10) : '',
+    });
+  };
+
+  useEffect(() => {
+    loadSelectedSesion();
+  }, [selectedSesion]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -25,18 +44,26 @@ function SesionForm({ onCreated }) {
     setLoading(true);
 
     try {
-      await sesionesService.create({
+      const payload = {
         nombre: formData.nombre,
         deporte: formData.deporte,
         duracionMinutos: Number(formData.duracionMinutos),
         nivel: formData.nivel,
         fecha: formData.fecha,
-      });
+      };
+
+      if (selectedSesion) {
+        await sesionesService.update(selectedSesion.id || selectedSesion._id, payload);
+        onSaved?.('Sesión actualizada con éxito.');
+      } else {
+        await sesionesService.create(payload);
+        onSaved?.('Sesión creada con éxito.');
+      }
 
       setFormData(initialForm);
       onCreated?.();
     } catch (err) {
-      setError(err.message || 'No se pudo crear la sesión.');
+      setError(err.message || 'No se pudo guardar la sesión.');
     } finally {
       setLoading(false);
     }
@@ -44,7 +71,10 @@ function SesionForm({ onCreated }) {
 
   return (
     <section style={styles.card}>
-      <h2 style={styles.title}>Nueva Sesión</h2>
+      <div style={styles.cardHeader}>
+        <h2 style={styles.cardTitle}>{selectedSesion ? 'Editar sesión' : 'Nueva sesión'}</h2>
+        <span style={styles.pill}>Formulario</span>
+      </div>
       <form onSubmit={handleSubmit} style={styles.form}>
         <label style={styles.label}>
           Nombre
@@ -78,26 +108,51 @@ function SesionForm({ onCreated }) {
 
         {error && <p style={styles.error}>{error}</p>}
 
-        <button type="submit" disabled={loading} style={styles.button}>
-          {loading ? 'Creando...' : 'Crear sesión'}
-        </button>
+        <div style={styles.actions}>
+          <button type="submit" disabled={loading} style={styles.primaryButton}>
+            {loading ? (selectedSesion ? 'Guardando...' : 'Creando...') : selectedSesion ? 'Actualizar sesión' : 'Crear sesión'}
+          </button>
+          {selectedSesion && (
+            <button type="button" onClick={onCancel} style={styles.secondaryButton}>
+              Cancelar
+            </button>
+          )}
+        </div>
       </form>
     </section>
   );
 }
 
+export default SesionForm;
+
 const styles = {
   card: {
-    border: '1px solid #dbe4f0',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 24,
+    border: '1px solid #e8ead4',
     backgroundColor: '#fff',
-    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)',
+    padding: 20,
+    boxShadow: '0 4px 12px rgba(15,23,42,0.05)',
   },
-  title: {
-    marginTop: 0,
+  cardHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 12,
-    fontSize: 20,
+  },
+  cardTitle: {
+    margin: 0,
+    fontSize: 18,
+    fontWeight: 700,
+    color: '#1a1d10',
+  },
+  pill: {
+    borderRadius: 999,
+    backgroundColor: '#d4ff00',
+    padding: '6px 12px',
+    fontSize: 11,
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    color: '#5f7400',
   },
   form: {
     display: 'grid',
@@ -106,28 +161,45 @@ const styles = {
   label: {
     display: 'grid',
     gap: 6,
+    fontSize: 14,
     fontWeight: 600,
-    color: '#1f2937',
+    color: '#444932',
   },
   input: {
-    border: '1px solid #cbd5e1',
-    borderRadius: 8,
-    padding: '8px 10px',
-    fontSize: 14,
-  },
-  button: {
-    border: 'none',
-    borderRadius: 8,
+    borderRadius: 12,
+    border: '1px solid #e8ead4',
+    backgroundColor: '#f4f5df',
     padding: '10px 12px',
-    backgroundColor: '#2563eb',
-    color: '#fff',
-    cursor: 'pointer',
-    fontWeight: 700,
+    fontSize: 14,
+    color: '#1a1d10',
+    outline: 'none',
   },
   error: {
-    color: '#b91c1c',
-    margin: 0,
+    color: '#ba1a1a',
+    fontWeight: 700,
+  },
+  actions: {
+    display: 'flex',
+    gap: 8,
+    alignItems: 'center',
+    paddingTop: 6,
+  },
+  primaryButton: {
+    borderRadius: 12,
+    backgroundColor: '#d4ff00',
+    padding: '10px 14px',
+    fontSize: 14,
+    fontWeight: 700,
+    color: '#5f7400',
+    border: 'none',
+  },
+  secondaryButton: {
+    borderRadius: 12,
+    border: '1px solid #0058bc',
+    backgroundColor: '#fff',
+    padding: '10px 14px',
+    fontSize: 14,
+    fontWeight: 700,
+    color: '#0058bc',
   },
 };
-
-export default SesionForm;

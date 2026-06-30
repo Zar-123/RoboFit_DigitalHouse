@@ -73,7 +73,10 @@ function WorkoutLogsForm({ selectedWorkout, onSaved, onCancel }) {
 
   return (
     <section style={styles.card}>
-      <h2 style={styles.title}>{selectedWorkout ? 'Editar Workout Log' : 'Nuevo Workout Log'}</h2>
+      <div style={styles.headerRow}>
+        <h2 style={styles.title}>{selectedWorkout ? 'Editar Workout Log' : 'Nuevo Workout Log'}</h2>
+        <span style={styles.badge}>Formulario</span>
+      </div>
       <form onSubmit={handleSubmit} style={styles.form}>
         <label style={styles.label}>
           Exercise
@@ -124,32 +127,54 @@ function WorkoutLogsForm({ selectedWorkout, onSaved, onCancel }) {
 
 const styles = {
   card: {
-    border: '1px solid #dbe4f0',
-    borderRadius: 12,
-    padding: 16,
     backgroundColor: '#fff',
-    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)',
+    borderRadius: 24,
+    padding: 20,
+    border: '1px solid #e8ead4',
+    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.05)',
+  },
+  headerRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
   },
   title: {
-    marginTop: 0,
-    marginBottom: 12,
+    margin: 0,
     fontSize: 20,
+    fontWeight: 700,
+    color: '#1a1d10',
+  },
+  badge: {
+    display: 'inline-flex',
+    backgroundColor: '#d4ff00',
+    color: '#5f7400',
+    borderRadius: 999,
+    padding: '8px 12px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    fontSize: 12,
+    fontWeight: 700,
   },
   form: {
     display: 'grid',
-    gap: 10,
+    gap: 12,
   },
   label: {
     display: 'grid',
     gap: 6,
     fontWeight: 600,
-    color: '#1f2937',
+    color: '#444932',
+    fontSize: 14,
   },
   input: {
-    border: '1px solid #cbd5e1',
-    borderRadius: 8,
-    padding: '8px 10px',
+    backgroundColor: '#f4f5df',
+    border: '1px solid #e8ead4',
+    borderRadius: 12,
+    padding: '10px 12px',
     fontSize: 14,
+    color: '#1a1d10',
   },
   buttonRow: {
     display: 'flex',
@@ -159,25 +184,27 @@ const styles = {
   },
   button: {
     border: 'none',
-    borderRadius: 8,
-    padding: '10px 12px',
-    backgroundColor: '#2563eb',
-    color: '#fff',
+    borderRadius: 12,
+    padding: '10px 14px',
+    backgroundColor: '#d4ff00',
+    color: '#5f7400',
     cursor: 'pointer',
     fontWeight: 700,
+    boxShadow: '0 4px 12px rgba(83, 102, 0, 0.12)',
   },
   cancelButton: {
-    border: '1px solid #9ca3af',
-    borderRadius: 8,
-    padding: '10px 12px',
+    border: '1px solid #0058bc',
+    borderRadius: 12,
+    padding: '10px 14px',
     backgroundColor: '#fff',
-    color: '#374151',
+    color: '#0058bc',
     cursor: 'pointer',
     fontWeight: 700,
   },
   error: {
-    color: '#b91c1c',
+    color: '#ba1a1a',
     margin: 0,
+    fontWeight: 600,
   },
 };
 

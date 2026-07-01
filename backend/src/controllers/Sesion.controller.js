@@ -1,20 +1,20 @@
 import SesionModel from '../models/Sesion.model.js';
 
 class SesionController {
-  static getAll(req, res) {
+  static async getAll(req, res) {
     try {
       const { userId } = req.params;
-      const list = SesionModel.getAll(userId);
+      const list = await SesionModel.getAll(userId);
       return res.status(200).json({ success: true, data: list, count: list.length });
     } catch (error) {
       return res.status(500).json({ success: false, error: error.message });
     }
   }
 
-  static getById(req, res) {
+  static async getById(req, res) {
     try {
       const { id } = req.params;
-      const item = SesionModel.getById(id);
+      const item = await SesionModel.getById(id);
       if (!item) return res.status(404).json({ success: false, error: 'Sesion not found' });
       return res.status(200).json({ success: true, data: item });
     } catch (error) {
@@ -22,7 +22,7 @@ class SesionController {
     }
   }
 
-  static create(req, res) {
+  static async create(req, res) {
     try {
       const { userId } = req.params;
       const { nombre, deporte, duracionMinutos, nivel, fecha } = req.body;
@@ -31,35 +31,35 @@ class SesionController {
         return res.status(400).json({ success: false, error: 'Missing required fields' });
       }
 
-      const newItem = SesionModel.create({ userId, nombre, deporte, duracionMinutos, nivel, fecha });
+      const newItem = await SesionModel.create({ userId, nombre, deporte, duracionMinutos, nivel, fecha });
       return res.status(201).json({ success: true, message: 'Sesion created', data: newItem });
     } catch (error) {
       return res.status(500).json({ success: false, error: error.message });
     }
   }
 
-  static update(req, res) {
+  static async update(req, res) {
     try {
       const { id } = req.params;
       const updates = req.body;
 
-      const item = SesionModel.getById(id);
+      const item = await SesionModel.getById(id);
       if (!item) return res.status(404).json({ success: false, error: 'Sesion not found' });
 
-      const updated = SesionModel.update(id, updates);
+      const updated = await SesionModel.update(id, updates);
       return res.status(200).json({ success: true, message: 'Sesion updated', data: updated });
     } catch (error) {
       return res.status(500).json({ success: false, error: error.message });
     }
   }
 
-  static remove(req, res) {
+  static async remove(req, res) {
     try {
       const { id } = req.params;
-      const item = SesionModel.getById(id);
+      const item = await SesionModel.getById(id);
       if (!item) return res.status(404).json({ success: false, error: 'Sesion not found' });
 
-      const deleted = SesionModel.delete(id);
+      const deleted = await SesionModel.delete(id);
       if (!deleted) return res.status(500).json({ success: false, error: 'Failed to delete sesion' });
 
       return res.status(200).json({ success: true, message: 'Sesion deleted' });

@@ -1,12 +1,12 @@
 import WorkoutLogModel from '../models/WorkoutLog.model.js';
 
 class WorkoutLogController {
-  // Get all workout logs for a user
-  static getAll(req, res) {
+  // Get all workout logs for a session
+  static async getAll(req, res) {
     try {
-      const { userId } = req.params;
-      const logs = WorkoutLogModel.getAll(userId);
-      
+      const { sesionId } = req.params;
+      const logs = await WorkoutLogModel.getAll(sesionId);
+
       return res.status(200).json({
         success: true,
         data: logs,
@@ -21,10 +21,10 @@ class WorkoutLogController {
   }
 
   // Get a single workout log by id
-  static getById(req, res) {
+  static async getById(req, res) {
     try {
       const { id } = req.params;
-      const log = WorkoutLogModel.getById(id);
+      const log = await WorkoutLogModel.getById(id);
 
       if (!log) {
         return res.status(404).json({
@@ -46,9 +46,9 @@ class WorkoutLogController {
   }
 
   // Create a new workout log
-  static create(req, res) {
+  static async create(req, res) {
     try {
-      const { userId } = req.params;
+      const { sesionId } = req.params;
       const { exercise, sets, reps, weight, duration, date } = req.body;
 
       // Validate required fields
@@ -59,8 +59,8 @@ class WorkoutLogController {
         });
       }
 
-      const newLog = WorkoutLogModel.create({
-        userId,
+      const newLog = await WorkoutLogModel.create({
+        sesionId,
         exercise,
         sets,
         reps,
@@ -83,12 +83,12 @@ class WorkoutLogController {
   }
 
   // Update a workout log
-  static update(req, res) {
+  static async update(req, res) {
     try {
       const { id } = req.params;
       const updates = req.body;
 
-      const log = WorkoutLogModel.getById(id);
+      const log = await WorkoutLogModel.getById(id);
       if (!log) {
         return res.status(404).json({
           success: false,
@@ -96,7 +96,7 @@ class WorkoutLogController {
         });
       }
 
-      const updatedLog = WorkoutLogModel.update(id, updates);
+      const updatedLog = await WorkoutLogModel.update(id, updates);
 
       return res.status(200).json({
         success: true,
@@ -112,11 +112,11 @@ class WorkoutLogController {
   }
 
   // Delete a workout log
-  static remove(req, res) {
+  static async remove(req, res) {
     try {
       const { id } = req.params;
 
-      const log = WorkoutLogModel.getById(id);
+      const log = await WorkoutLogModel.getById(id);
       if (!log) {
         return res.status(404).json({
           success: false,
@@ -124,7 +124,7 @@ class WorkoutLogController {
         });
       }
 
-      const deleted = WorkoutLogModel.delete(id);
+      const deleted = await WorkoutLogModel.delete(id);
 
       if (!deleted) {
         return res.status(500).json({

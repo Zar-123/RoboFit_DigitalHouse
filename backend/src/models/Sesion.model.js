@@ -1,49 +1,100 @@
-// In-memory sesiones model (mock)
-const sesiones = [];
+import { supabase } from '../supabase.js';
 
 class SesionModel {
-  static getAll(userId) {
-    return sesiones.filter(s => s.userId === userId);
+  static async getAll(userId) {
+    try {
+      const { data, error } = await supabase
+        .from('Sesion')
+        .select('*')
+        .eq('userId', userId);
+
+      if (error) {
+        throw error;
+      }
+
+      return data ?? [];
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static getById(id) {
-    return sesiones.find(s => s.id === id);
+  static async getById(id) {
+    try {
+      const { data, error } = await supabase
+        .from('Sesion')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static create(data) {
-    const newSesion = {
-      id: `ses-${Date.now()}`,
-      userId: data.userId,
-      nombre: data.nombre,
-      deporte: data.deporte,
-      duracionMinutos: data.duracionMinutos,
-      nivel: data.nivel,
-      fecha: data.fecha,
-    };
-    sesiones.push(newSesion);
-    return newSesion;
+  static async create(data) {
+    try {
+      const { data: newSesion, error } = await supabase
+        .from('Sesion')
+        .insert({
+          userId: data.userId,
+          nombre: data.nombre,
+          deporte: data.deporte,
+          duracionMinutos: data.duracionMinutos,
+          nivel: data.nivel,
+          fecha: data.fecha,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      return newSesion;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static update(id, data) {
-    const index = sesiones.findIndex(s => s.id === id);
-    if (index === -1) return null;
+  static async update(id, data) {
+    try {
+      const { data: updatedSesion, error } = await supabase
+        .from('Sesion')
+        .update(data)
+        .eq('id', id)
+        .select()
+        .single();
 
-    const updated = {
-      ...sesiones[index],
-      ...data,
-      id: sesiones[index].id,
-      userId: sesiones[index].userId,
-    };
+      if (error) {
+        throw error;
+      }
 
-    sesiones[index] = updated;
-    return updated;
+      return updatedSesion;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  static delete(id) {
-    const index = sesiones.findIndex(s => s.id === id);
-    if (index === -1) return false;
-    sesiones.splice(index, 1);
-    return true;
+  static async delete(id) {
+    try {
+      const { error } = await supabase
+        .from('Sesion')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        throw error;
+      }
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

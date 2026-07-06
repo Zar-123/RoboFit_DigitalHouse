@@ -1,92 +1,41 @@
 # RoboFit
 
-> 🏋️‍♂️ RoboFit es una app fullstack para administrar `Workout Logs` y `Sesiones`.
+RoboFit es una bitácora digital de entrenamiento para deportistas amateurs que entrenan solos. Permite registrar sesiones de entrenamiento y los ejercicios dentro de cada sesión, visualizando el progreso de forma simple y sin presión.
 
----
+## Stack
 
-## 📌 Resumen del proyecto
+- Node.js + Express (backend)
+- React + Vite (frontend)
+- Supabase (base de datos)
+- Render (deploy backend)
+- Vercel (deploy frontend)
 
-- Backend: Node + Express
-- Frontend: Vite + React
-- Estructura actual:
-  - `backend/`: servidor API, modelos mock, rutas, controladores
-  - `frontend/`: aplicación React y service layer
-- API proxy configurado desde Vite hacia `http://localhost:3000`
+## Entidades
 
----
+- Sesion: representa el entrenamiento del día (nombre, deporte, duración, nivel, fecha)
+- WorkoutLog: representa un ejercicio dentro de una sesión (exercise, sets, reps, weight, duration, date) — vinculado a Sesion por foreign key
 
-## 🧱 Arquitectura
+## URLs de producción
+
+- Frontend: https://robo-fit-digital-house.vercel.app
+- Backend: https://robofit-digitalhouse.onrender.com
+
+## Variables de entorno necesarias para correr el proyecto localmente
 
 ### Backend
 
-- `backend/index.js`
-- `backend/src/routes/index.routes.js`
-- `backend/src/routes/workouts.routes.js`
-- `backend/src/routes/sesiones.routes.js`
-- `backend/src/controllers/WorkoutLog.controller.js`
-- `backend/src/controllers/Sesion.controller.js`
-- `backend/src/models/WorkoutLog.model.js`
-- `backend/src/models/Sesion.model.js`
+- SUPABASE_URL
+- SUPABASE_KEY
 
 ### Frontend
 
-- `frontend/package.json`
-- `frontend/vite.config.js`
-- `frontend/index.html`
-- `frontend/src/main.jsx`
-- `frontend/src/App.jsx`
-- `frontend/src/services/workoutLogs.service.js`
-- `frontend/src/services/sesiones.service.js`
-- `frontend/src/components/WorkoutLogsForm.jsx`
-- `frontend/src/components/WorkoutLogsList.jsx`
-- `frontend/src/components/SesionForm.jsx`
-- `frontend/src/components/SesionList.jsx`
+- VITE_API_URL
 
----
+## Nota
 
-## 🚀 Endpoints principales
+El backend en Render usa el free tier. La primera request después de 15 minutos de inactividad puede tardar 30-60 segundos en responder.
 
-### Workout Logs
-
-- `GET /api/user-123/workouts`
-- `GET /api/user-123/workouts/:id`
-- `POST /api/user-123/workouts`
-- `PUT /api/user-123/workouts/:id`
-- `DELETE /api/user-123/workouts/:id`
-
-### Sesiones
-
-- `GET /api/user-123/sesiones`
-- `GET /api/user-123/sesiones/:id`
-- `POST /api/user-123/sesiones`
-- `PUT /api/user-123/sesiones/:id`
-- `DELETE /api/user-123/sesiones/:id`
-
----
-
-## 🧾 Formato de respuesta de la API
-
-Todas las rutas usan el mismo envoltorio JSON:
-
-```json
-{
-  "success": true,
-  "data": {...}
-}
-```
-
-o
-
-```json
-{
-  "success": false,
-  "message": "Error message"
-}
-```
-
----
-
-## ▶️ Cómo ejecutar
+## Ejecutar localmente
 
 ### Backend
 
@@ -103,41 +52,3 @@ cd frontend
 npm install
 npm run dev
 ```
-
----
-
-## ✅ Estado actual
-
-- Backend separado en `backend/`
-- Frontend separado en `frontend/`
-- Servicio CRUD de `workoutLogs` funcional
-- Servicio CRUD de `sesiones` funcional
-- UI básica con `WorkoutLogsForm`, `WorkoutLogsList`, `SesionForm` y `SesionList`
-
----
-
-## ⚠️ Pendientes y mejoras
-
-- [ ] Validación de usuario dinámico en rutas (actualmente `user-123` hardcodeado)
-- [ ] Agregar autenticación/autorization
-- [ ] Mejorar la UI de `WorkoutLogs` y `Sesiones`
-- [ ] Añadir edición y borrado en la UI
-- [ ] Cambiar los modelos mock a una base de datos real
-- [ ] Manejo global de errores en frontend
-- [ ] Soporte para `PATCH` si se quiere actualización parcial más tarde
-
----
-
-## 🎨 Logos y branding
-
-- Logo principal: `RoboFit` 🦾
-- Íconos sugeridos: `🏋️‍♂️`, `🤖`, `💪`, `📊`
-- Paleta inicial: azul suave para botones y tarjetas claras.
-
----
-
-## 📌 Notas recientes
-
-- El frontend ahora muestra errores reales desde `result.error` en lugar de un mensaje genérico.
-- Se corrigió el campo `duration` en `WorkoutLogsForm` para que coincida con el backend.
-- Se validó la ruta `POST /api/user-123/sesiones` y el endpoint responde correctamente.

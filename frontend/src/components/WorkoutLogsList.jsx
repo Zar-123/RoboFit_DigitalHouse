@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import workoutLogsService from '../services/workoutLogs.service.js';
 
-function WorkoutLogsList({ refreshKey = 0, onEdit, onDeleted }) {
+function WorkoutLogsList({ refreshKey = 0, onEdit, onDeleted, sesionId }) {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -13,14 +13,22 @@ function WorkoutLogsList({ refreshKey = 0, onEdit, onDeleted }) {
       setLoading(true);
       setError('');
 
+      if (!sesionId) {
+        if (isMounted) {
+          setLogs([]);
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
-        const data = await workoutLogsService.getAll();
+        const data = await workoutLogsService.getAll(sesionId);
         if (isMounted) {
           setLogs(Array.isArray(data) ? data : []);
         }
       } catch (err) {
         if (isMounted) {
-          setError(err.message || 'No se pudieron cargar los workout logs.');
+          setError(err.message || 'No se pudieron cargar los registros de ejercicios.');
         }
       } finally {
         if (isMounted) {
@@ -34,31 +42,36 @@ function WorkoutLogsList({ refreshKey = 0, onEdit, onDeleted }) {
     return () => {
       isMounted = false;
     };
-  }, [refreshKey]);
+  }, [refreshKey, sesionId]);
 
   const handleDelete = async (item) => {
-    if (!window.confirm('¿Eliminar este workout log?')) {
+    if (!window.confirm('¿Eliminar este registro de ejercicio?')) {
+      return;
+    }
+
+    if (!sesionId) {
+      setError('Seleccioná una sesión para eliminar el ejercicio.');
       return;
     }
 
     try {
-      await workoutLogsService.remove(item.id || item._id);
+      await workoutLogsService.remove(sesionId, item.id || item._id);
       setLogs((prev) => prev.filter((log) => log.id !== item.id && log._id !== item._id));
       onDeleted?.();
     } catch (err) {
-      setError(err.message || 'No se pudo eliminar el workout log.');
+      setError(err.message || 'No se pudo eliminar el ejercicio.');
     }
   };
 
   return (
     <section style={styles.card}>
-      <h2 style={styles.title}>Workout Logs</h2>
+      <h2 style={styles.title}>Registros de ejercicios</h2>
 
       {loading && <p style={styles.muted}>Cargando registros...</p>}
       {error && <p style={styles.error}>{error}</p>}
 
       {!loading && !error && logs.length === 0 && (
-        <p style={styles.muted}>No hay workout logs para mostrar.</p>
+        <p style={styles.muted}>No hay registros de ejercicios para mostrar.</p>
       )}
 
       {!loading && !error && logs.length > 0 && (

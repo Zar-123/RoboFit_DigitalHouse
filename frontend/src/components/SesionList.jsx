@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
 import sesionesService from '../services/sesiones.service.js';
+import WorkoutLogsForm from './WorkoutLogsForm.jsx';
+import WorkoutLogsList from './WorkoutLogsList.jsx';
 
-function SesionList({ refreshKey = 0, onEdit, onDeleted }) {
+function SesionList({ refreshKey = 0, onEdit, onDeleted, onVerWorkouts }) {
   const [sesiones, setSesiones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedSesionForWorkouts, setSelectedSesionForWorkouts] = useState(null);
+  const [selectedWorkout, setSelectedWorkout] = useState(null);
+  const [workoutRefreshKey, setWorkoutRefreshKey] = useState(0);
 
   let isMounted = true;
 
@@ -80,37 +85,90 @@ function SesionList({ refreshKey = 0, onEdit, onDeleted }) {
       )}
 
       {!loading && !error && sesiones.length > 0 && (
-        <ul style={styles.list}>
-          {sesiones.map((item) => (
-            <li key={item.id || item._id} style={styles.item}>
-              <div style={styles.itemHeader}>
+        <>
+          <ul style={styles.list}>
+            {sesiones.map((item) => (
+              <li key={item.id || item._id} style={styles.item}>
+                <div style={styles.itemHeader}>
+                  <div>
+                    <strong style={styles.itemTitle}>{item.nombre || 'Sin nombre'}</strong>
+                    <p style={styles.itemMeta}>{item.deporte || '-'}</p>
+                  </div>
+                  <span style={styles.levelBadge}>{item.nivel || 'N/A'}</span>
+                </div>
+                <div style={styles.details}>
+                  <div style={styles.detail}>
+                    <span style={styles.detailLabel}>Duración</span>
+                    {item.duracionMinutos ?? '-'} min
+                  </div>
+                  <div style={styles.detail}>
+                    <span style={styles.detailLabel}>Fecha</span>
+                    {item.fecha ? new Date(item.fecha).toLocaleDateString() : '-'}
+                  </div>
+                </div>
+                <div style={styles.actions}>
+                  <button
+                    type="button"
+                    style={styles.workoutsButton}
+                    onClick={() => {
+                      setSelectedSesionForWorkouts(item);
+                      setSelectedWorkout(null);
+                      onVerWorkouts?.(item);
+                    }}
+                  >
+                    Ver ejercicios
+                  </button>
+                  <button type="button" style={styles.editButton} onClick={() => onEdit?.(item)}>
+                    Editar
+                  </button>
+                  <button type="button" style={styles.deleteButton} onClick={() => handleDelete(item)}>
+                    Eliminar
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          {selectedSesionForWorkouts && (
+            <section style={styles.workoutsPanel}>
+              <div style={styles.workoutsPanelHeader}>
                 <div>
-                  <strong style={styles.itemTitle}>{item.nombre || 'Sin nombre'}</strong>
-                  <p style={styles.itemMeta}>{item.deporte || '-'}</p>
+                  <h3 style={styles.workoutsPanelTitle}>Ejercicios de {selectedSesionForWorkouts.nombre || 'la sesión'}</h3>
+                  <p style={styles.workoutsPanelSubtitle}>Gestioná los ejercicios de esta sesión.</p>
                 </div>
-                <span style={styles.levelBadge}>{item.nivel || 'N/A'}</span>
-              </div>
-              <div style={styles.details}>
-                <div style={styles.detail}>
-                  <span style={styles.detailLabel}>Duración</span>
-                  {item.duracionMinutos ?? '-'} min
-                </div>
-                <div style={styles.detail}>
-                  <span style={styles.detailLabel}>Fecha</span>
-                  {item.fecha ? new Date(item.fecha).toLocaleDateString() : '-'}
-                </div>
-              </div>
-              <div style={styles.actions}>
-                <button type="button" style={styles.editButton} onClick={() => onEdit?.(item)}>
-                  Editar
-                </button>
-                <button type="button" style={styles.deleteButton} onClick={() => handleDelete(item)}>
-                  Eliminar
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedSesionForWorkouts(null);
+                    setSelectedWorkout(null);
+                  }}
+                  style={styles.closeButton}
+                >
+                  Cerrar
                 </button>
               </div>
-            </li>
-          ))}
-        </ul>
+              <div style={styles.workoutsPanelGrid}>
+                <WorkoutLogsForm
+                  sesionId={selectedSesionForWorkouts.id || selectedSesionForWorkouts._id}
+                  selectedWorkout={selectedWorkout}
+                  onSaved={() => {
+                    setWorkoutRefreshKey((value) => value + 1);
+                    setSelectedWorkout(null);
+                  }}
+                  onCancel={() => setSelectedWorkout(null)}
+                />
+                <WorkoutLogsList
+                  sesionId={selectedSesionForWorkouts.id || selectedSesionForWorkouts._id}
+                  refreshKey={workoutRefreshKey}
+                  onEdit={(log) => setSelectedWorkout(log)}
+                  onDeleted={() => {
+                    setWorkoutRefreshKey((value) => value + 1);
+                  }}
+                />
+              </div>
+            </section>
+          )}
+        </>
       )}
     </section>
   );
@@ -249,6 +307,15 @@ const styles = {
     flexWrap: 'wrap',
     gap: 8,
   },
+  workoutsButton: {
+    border: '1px solid #536600',
+    borderRadius: 10,
+    padding: '8px 12px',
+    backgroundColor: '#f4f5df',
+    color: '#536600',
+    cursor: 'pointer',
+    fontWeight: 700,
+  },
   editButton: {
     border: '1px solid #0058bc',
     borderRadius: 10,
@@ -264,6 +331,45 @@ const styles = {
     padding: '8px 12px',
     backgroundColor: '#fff',
     color: '#dc2626',
+    cursor: 'pointer',
+    fontWeight: 700,
+  },
+  workoutsPanel: {
+    marginTop: 16,
+    borderRadius: 24,
+    border: '1px solid #e8ead4',
+    backgroundColor: '#fff',
+    padding: 20,
+    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.05)',
+  },
+  workoutsPanelHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+  },
+  workoutsPanelTitle: {
+    margin: 0,
+    fontSize: 18,
+    color: '#1a1d10',
+    fontWeight: 700,
+  },
+  workoutsPanelSubtitle: {
+    margin: '4px 0 0',
+    color: '#444932',
+    fontSize: 14,
+  },
+  workoutsPanelGrid: {
+    display: 'grid',
+    gap: 16,
+  },
+  closeButton: {
+    border: '1px solid #0058bc',
+    borderRadius: 999,
+    padding: '8px 12px',
+    backgroundColor: '#fff',
+    color: '#0058bc',
     cursor: 'pointer',
     fontWeight: 700,
   },

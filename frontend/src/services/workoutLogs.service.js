@@ -1,4 +1,12 @@
-const API_BASE = `${(import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/\/$/, '')}/api/user-123/workouts`;
+const API_ROOT = (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/\/$/, '');
+
+function getWorkoutApiBase(sesionId) {
+  if (!sesionId) {
+    throw new Error('sesionId is required');
+  }
+
+  return `${API_ROOT}/api/sesiones/${encodeURIComponent(sesionId)}/workouts`;
+}
 
 async function parseResponse(response) {
   const result = await response.json().catch(() => ({}));
@@ -10,18 +18,18 @@ async function parseResponse(response) {
   return result.data ?? result;
 }
 
-async function getAll() {
-  const response = await fetch(API_BASE, { method: 'GET' });
+async function getAll(sesionId) {
+  const response = await fetch(getWorkoutApiBase(sesionId), { method: 'GET' });
   return parseResponse(response);
 }
 
-async function getById(id) {
-  const response = await fetch(`${API_BASE}/${id}`, { method: 'GET' });
+async function getById(sesionId, id) {
+  const response = await fetch(`${getWorkoutApiBase(sesionId)}/${id}`, { method: 'GET' });
   return parseResponse(response);
 }
 
-async function create(data) {
-  const response = await fetch(API_BASE, {
+async function create(sesionId, data) {
+  const response = await fetch(getWorkoutApiBase(sesionId), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -30,8 +38,8 @@ async function create(data) {
   return parseResponse(response);
 }
 
-async function update(id, data) {
-  const response = await fetch(`${API_BASE}/${id}`, {
+async function update(sesionId, id, data) {
+  const response = await fetch(`${getWorkoutApiBase(sesionId)}/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -40,8 +48,8 @@ async function update(id, data) {
   return parseResponse(response);
 }
 
-async function remove(id) {
-  const response = await fetch(`${API_BASE}/${id}`, { method: 'DELETE' });
+async function remove(sesionId, id) {
+  const response = await fetch(`${getWorkoutApiBase(sesionId)}/${id}`, { method: 'DELETE' });
   return parseResponse(response);
 }
 

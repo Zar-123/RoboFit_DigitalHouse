@@ -1,14 +1,10 @@
 import { useState } from 'react';
 import { Routes, Route, Navigate, NavLink } from 'react-router-dom';
-import WorkoutLogsForm from './components/WorkoutLogsForm.jsx';
-import WorkoutLogsList from './components/WorkoutLogsList.jsx';
 import SesionForm from './components/SesionForm.jsx';
 import SesionList from './components/SesionList.jsx';
 
 function App() {
-  const [workoutRefreshKey, setWorkoutRefreshKey] = useState(0);
   const [sesionRefreshKey, setSesionRefreshKey] = useState(0);
-  const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [selectedSesion, setSelectedSesion] = useState(null);
   const [feedback, setFeedback] = useState('');
 
@@ -26,16 +22,9 @@ function App() {
           <div style={styles.brand}>
             <p style={styles.brandCaption}>RoboFit</p>
             <h1 style={styles.brandTitle}>Registro de actividad</h1>
-            <p style={styles.brandSubtitle}>Gestión de workout logs y sesiones con un estilo visual consistente.</p>
+            <p style={styles.brandSubtitle}>Gestión de registros de ejercicios y sesiones con un estilo visual consistente.</p>
           </div>
           <nav style={styles.nav}>
-            <NavLink
-              to="/workouts"
-              end
-              style={({ isActive }) => (isActive ? styles.navActive : styles.navItem)}
-            >
-              Workouts
-            </NavLink>
             <NavLink
               to="/sesiones"
               style={({ isActive }) => (isActive ? styles.navActive : styles.navItem)}
@@ -50,39 +39,7 @@ function App() {
         )}
 
         <Routes>
-          <Route path="/" element={<Navigate to="/workouts" replace />} />
-          <Route
-            path="/workouts"
-            element={
-              <section className="grid gap-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-[#1a1d10]">Workout Logs</h2>
-                  <span className="rounded-full bg-[#d4ff00] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[#5f7400]">
-                    Entrenamiento
-                  </span>
-                </div>
-                <div className="grid gap-4 lg:grid-cols-[minmax(320px,1fr)_minmax(320px,1fr)]">
-                  <WorkoutLogsForm
-                    selectedWorkout={selectedWorkout}
-                    onSaved={(message) => {
-                      setWorkoutRefreshKey((value) => value + 1);
-                      setSelectedWorkout(null);
-                      showFeedback(message);
-                    }}
-                    onCancel={() => setSelectedWorkout(null)}
-                  />
-                  <WorkoutLogsList
-                    refreshKey={workoutRefreshKey}
-                    onEdit={(log) => setSelectedWorkout(log)}
-                    onDeleted={() => {
-                      setWorkoutRefreshKey((value) => value + 1);
-                      showFeedback('Workout eliminado con éxito.');
-                    }}
-                  />
-                </div>
-              </section>
-            }
-          />
+          <Route path="/" element={<Navigate to="/sesiones" replace />} />
           <Route
             path="/sesiones"
             element={

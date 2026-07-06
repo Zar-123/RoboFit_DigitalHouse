@@ -10,7 +10,7 @@ const initialForm = {
   date: '',
 };
 
-function WorkoutLogsForm({ selectedWorkout, onSaved, onCancel }) {
+function WorkoutLogsForm({ selectedWorkout, onSaved, onCancel, sesionId }) {
   const [formData, setFormData] = useState(initialForm);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -45,6 +45,12 @@ function WorkoutLogsForm({ selectedWorkout, onSaved, onCancel }) {
     setError('');
     setLoading(true);
 
+    if (!sesionId) {
+      setError('Seleccioná una sesión para guardar el ejercicio.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const payload = {
         exercise: formData.exercise,
@@ -56,16 +62,16 @@ function WorkoutLogsForm({ selectedWorkout, onSaved, onCancel }) {
       };
 
       if (selectedWorkout) {
-        await workoutLogsService.update(selectedWorkout.id || selectedWorkout._id, payload);
-        onSaved?.('Workout actualizado con éxito.');
+        await workoutLogsService.update(sesionId, selectedWorkout.id || selectedWorkout._id, payload);
+        onSaved?.('Ejercicio actualizado con éxito.');
       } else {
-        await workoutLogsService.create(payload);
-        onSaved?.('Workout creado con éxito.');
+        await workoutLogsService.create(sesionId, payload);
+        onSaved?.('Ejercicio creado con éxito.');
       }
 
       setFormData(initialForm);
     } catch (err) {
-      setError(err.message || 'No se pudo guardar el workout log.');
+      setError(err.message || 'No se pudo guardar el ejercicio.');
     } finally {
       setLoading(false);
     }
@@ -74,7 +80,7 @@ function WorkoutLogsForm({ selectedWorkout, onSaved, onCancel }) {
   return (
     <section style={styles.card}>
       <div style={styles.headerRow}>
-        <h2 style={styles.title}>{selectedWorkout ? 'Editar Workout Log' : 'Nuevo Workout Log'}</h2>
+        <h2 style={styles.title}>{selectedWorkout ? 'Editar registro de ejercicio' : 'Nuevo ejercicio'}</h2>
         <span style={styles.badge}>Formulario</span>
       </div>
       <form onSubmit={handleSubmit} style={styles.form}>
@@ -112,7 +118,7 @@ function WorkoutLogsForm({ selectedWorkout, onSaved, onCancel }) {
 
         <div style={styles.buttonRow}>
           <button type="submit" disabled={loading} style={styles.button}>
-            {loading ? (selectedWorkout ? 'Guardando...' : 'Creando...') : selectedWorkout ? 'Actualizar workout' : 'Crear workout log'}
+            {loading ? (selectedWorkout ? 'Guardando...' : 'Creando...') : selectedWorkout ? 'Actualizar ejercicio' : 'Guardar ejercicio'}
           </button>
           {selectedWorkout && (
             <button type="button" style={styles.cancelButton} onClick={onCancel}>

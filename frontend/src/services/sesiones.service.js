@@ -1,4 +1,4 @@
-const API_BASE = '/api/user-123/sesiones';
+const API_BASE = `${(import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/\/$/, '')}/api/user-123/sesiones`;
 
 async function parseResponse(response) {
   const result = await response.json().catch(() => ({}));

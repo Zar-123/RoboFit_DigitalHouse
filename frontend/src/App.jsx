@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Routes, Route, Navigate, NavLink } from 'react-router-dom';
+import { Routes, Route, NavLink } from 'react-router-dom';
 import SesionForm from './components/SesionForm.jsx';
 import SesionList from './components/SesionList.jsx';
+import Welcome from './components/Welcome.jsx';
 
 function App() {
   const [sesionRefreshKey, setSesionRefreshKey] = useState(0);
@@ -21,15 +22,22 @@ function App() {
         <header style={styles.header}>
           <div style={styles.brand}>
             <p style={styles.brandCaption}>RoboFit</p>
-            <h1 style={styles.brandTitle}>Registro de actividad</h1>
-            <p style={styles.brandSubtitle}>Gestión de registros de ejercicios y sesiones con un estilo visual consistente.</p>
+            <h1 style={styles.brandTitle}>Bitácora de Entrenamiento</h1>
+            <p style={styles.brandSubtitle}>Registrá tus sesiones y ejercicios sin presiones, a tu propio ritmo.</p>
           </div>
           <nav style={styles.nav}>
+            <NavLink
+              to="/"
+              style={({ isActive }) => (isActive ? styles.navActive : styles.navItem)}
+              end
+            >
+              Inicio
+            </NavLink>
             <NavLink
               to="/sesiones"
               style={({ isActive }) => (isActive ? styles.navActive : styles.navItem)}
             >
-              Sesiones
+              Mis Sesiones
             </NavLink>
           </nav>
         </header>
@@ -39,7 +47,7 @@ function App() {
         )}
 
         <Routes>
-          <Route path="/" element={<Navigate to="/sesiones" replace />} />
+          <Route path="/" element={<Welcome />} />
           <Route
             path="/sesiones"
             element={

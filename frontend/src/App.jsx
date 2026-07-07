@@ -8,6 +8,7 @@ function App() {
   const [sesionRefreshKey, setSesionRefreshKey] = useState(0);
   const [selectedSesion, setSelectedSesion] = useState(null);
   const [feedback, setFeedback] = useState('');
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'create'
 
   const showFeedback = (message) => {
     setFeedback(message);
@@ -51,31 +52,65 @@ function App() {
           <Route
             path="/sesiones"
             element={
-              <section className="grid gap-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-[#1a1d10]">Sesiones</h2>
-                  <span className="rounded-full bg-[#d4ff00] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[#5f7400]">
+              <section style={styles.sesionesLayout}>
+                <div style={styles.sesionesHeader}>
+                  <h2 style={styles.sectionTitle}>Sesiones</h2>
+                  <span style={styles.planBadge}>
                     Planificación
                   </span>
                 </div>
-                <div className="grid gap-4 lg:grid-cols-[minmax(320px,1fr)_minmax(320px,1fr)]">
-                  <SesionForm
-                    selectedSesion={selectedSesion}
-                    onSaved={(message) => {
-                      setSesionRefreshKey((value) => value + 1);
+
+                <div style={styles.tabContainer}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setViewMode('list');
                       setSelectedSesion(null);
-                      showFeedback(message);
                     }}
-                    onCancel={() => setSelectedSesion(null)}
-                  />
-                  <SesionList
-                    refreshKey={sesionRefreshKey}
-                    onEdit={(session) => setSelectedSesion(session)}
-                    onDeleted={(message) => {
-                      setSesionRefreshKey((value) => value + 1);
-                      showFeedback(message);
+                    style={viewMode === 'list' ? styles.tabActive : styles.tabInactive}
+                  >
+                    📂 Ver Sesiones Realizadas
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedSesion(null);
+                      setViewMode('create');
                     }}
-                  />
+                    style={viewMode === 'create' ? styles.tabActive : styles.tabInactive}
+                  >
+                    ➕ Crear Nueva Sesión
+                  </button>
+                </div>
+
+                <div>
+                  {viewMode === 'create' ? (
+                    <SesionForm
+                      selectedSesion={selectedSesion}
+                      onSaved={(message) => {
+                        setSesionRefreshKey((value) => value + 1);
+                        setSelectedSesion(null);
+                        setViewMode('list'); // Switch back to list after saving
+                        showFeedback(message);
+                      }}
+                      onCancel={() => {
+                        setSelectedSesion(null);
+                        setViewMode('list'); // Switch back to list on cancel
+                      }}
+                    />
+                  ) : (
+                    <SesionList
+                      refreshKey={sesionRefreshKey}
+                      onEdit={(session) => {
+                        setSelectedSesion(session);
+                        setViewMode('create'); // Switch to form automatically on edit
+                      }}
+                      onDeleted={(message) => {
+                        setSesionRefreshKey((value) => value + 1);
+                        showFeedback(message);
+                      }}
+                    />
+                  )}
                 </div>
               </section>
             }
@@ -170,5 +205,62 @@ const styles = {
     padding: '12px 16px',
     fontWeight: 700,
     color: '#2b5d2b',
+  },
+  sesionesLayout: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 16,
+  },
+  sesionesHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  sectionTitle: {
+    fontSize: '20px',
+    fontWeight: 700,
+    color: '#1a1d10',
+    margin: 0,
+  },
+  planBadge: {
+    borderRadius: 999,
+    backgroundColor: '#d4ff00',
+    padding: '6px 12px',
+    fontSize: '11px',
+    fontWeight: 700,
+    color: '#5f7400',
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+  },
+  tabContainer: {
+    display: 'flex',
+    gap: 12,
+  },
+  tabActive: {
+    flex: 1,
+    padding: '12px 16px',
+    borderRadius: 14,
+    border: '1px solid #d4ff00',
+    backgroundColor: '#d4ff00',
+    color: '#5f7400',
+    fontWeight: 700,
+    cursor: 'pointer',
+    fontSize: '14px',
+    textAlign: 'center',
+    boxShadow: '0 4px 12px rgba(212,255,0,0.15)',
+    transition: 'all 0.2s ease',
+  },
+  tabInactive: {
+    flex: 1,
+    padding: '12px 16px',
+    borderRadius: 14,
+    border: '1px solid #e8ead4',
+    backgroundColor: '#fff',
+    color: '#444932',
+    fontWeight: 600,
+    cursor: 'pointer',
+    fontSize: '14px',
+    textAlign: 'center',
+    transition: 'all 0.2s ease',
   },
 };

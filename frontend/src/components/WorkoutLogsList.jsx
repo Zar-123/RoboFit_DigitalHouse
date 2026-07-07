@@ -93,7 +93,7 @@ function WorkoutLogsList({ refreshKey = 0, onEdit, onDeleted, sesionId }) {
               <span>Reps: {item.reps ?? '-'}</span>
               <span>Peso: {item.weight ?? '-'}</span>
               <span>Duration: {item.duration ?? '-'}</span>
-              <span>Fecha: {item.date ? new Date(item.date).toLocaleDateString() : '-'}</span>
+              <span>Fecha: {item.date ? new Date(item.date.slice(0, 10).replace(/-/g, '/')).toLocaleDateString() : '-'}</span>
             </li>
           ))}
         </ul>

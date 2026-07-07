@@ -10,6 +10,7 @@ function SesionList({ refreshKey = 0, onEdit, onDeleted, onVerWorkouts }) {
   const [selectedSesionForWorkouts, setSelectedSesionForWorkouts] = useState(null);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [workoutRefreshKey, setWorkoutRefreshKey] = useState(0);
+  const [showAddWorkout, setShowAddWorkout] = useState(false);
 
   let isMounted = true;
 
@@ -103,7 +104,7 @@ function SesionList({ refreshKey = 0, onEdit, onDeleted, onVerWorkouts }) {
                   </div>
                   <div style={styles.detail}>
                     <span style={styles.detailLabel}>Fecha</span>
-                    {item.fecha ? new Date(item.fecha).toLocaleDateString() : '-'}
+                    {item.fecha ? new Date(item.fecha.slice(0, 10).replace(/-/g, '/')).toLocaleDateString() : '-'}
                   </div>
                 </div>
                 <div style={styles.actions}>
@@ -113,6 +114,7 @@ function SesionList({ refreshKey = 0, onEdit, onDeleted, onVerWorkouts }) {
                     onClick={() => {
                       setSelectedSesionForWorkouts(item);
                       setSelectedWorkout(null);
+                      setShowAddWorkout(false); // Show logs list first
                       onVerWorkouts?.(item);
                     }}
                   >
@@ -134,37 +136,75 @@ function SesionList({ refreshKey = 0, onEdit, onDeleted, onVerWorkouts }) {
               <div style={styles.workoutsPanelHeader}>
                 <div>
                   <h3 style={styles.workoutsPanelTitle}>Ejercicios de {selectedSesionForWorkouts.nombre || 'la sesión'}</h3>
-                  <p style={styles.workoutsPanelSubtitle}>Gestioná los ejercicios de esta sesión.</p>
+                  <p style={styles.workoutsPanelSubtitle}>
+                    {showAddWorkout ? 'Cargar nuevo ejercicio' : 'Listado de ejercicios de esta sesión.'}
+                  </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedSesionForWorkouts(null);
-                    setSelectedWorkout(null);
-                  }}
-                  style={styles.closeButton}
-                >
-                  Cerrar
-                </button>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  {!showAddWorkout ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedWorkout(null);
+                        setShowAddWorkout(true);
+                      }}
+                      style={styles.addWorkoutBtn}
+                    >
+                      ➕ Crear Ejercicio
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedWorkout(null);
+                        setShowAddWorkout(false);
+                      }}
+                      style={styles.backButton}
+                    >
+                      📂 Ver Registrados
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedSesionForWorkouts(null);
+                      setSelectedWorkout(null);
+                      setShowAddWorkout(false);
+                    }}
+                    style={styles.closeButton}
+                  >
+                    Cerrar
+                  </button>
+                </div>
               </div>
               <div style={styles.workoutsPanelGrid}>
-                <WorkoutLogsForm
-                  sesionId={selectedSesionForWorkouts.id || selectedSesionForWorkouts._id}
-                  selectedWorkout={selectedWorkout}
-                  onSaved={() => {
-                    setWorkoutRefreshKey((value) => value + 1);
-                    setSelectedWorkout(null);
-                  }}
-                  onCancel={() => setSelectedWorkout(null)}
-                />
-                <WorkoutLogsList
-                  sesionId={selectedSesionForWorkouts.id || selectedSesionForWorkouts._id}
-                  refreshKey={workoutRefreshKey}
-                  onEdit={(log) => setSelectedWorkout(log)}
-                  onDeleted={() => {
-                    setWorkoutRefreshKey((value) => value + 1);
-                  }}
-                />
+                {showAddWorkout ? (
+                  <WorkoutLogsForm
+                    sesionId={selectedSesionForWorkouts.id || selectedSesionForWorkouts._id}
+                    selectedWorkout={selectedWorkout}
+                    onSaved={() => {
+                      setWorkoutRefreshKey((value) => value + 1);
+                      setSelectedWorkout(null);
+                      setShowAddWorkout(false);
+                    }}
+                    onCancel={() => {
+                      setSelectedWorkout(null);
+                      setShowAddWorkout(false);
+                    }}
+                  />
+                ) : (
+                  <WorkoutLogsList
+                    sesionId={selectedSesionForWorkouts.id || selectedSesionForWorkouts._id}
+                    refreshKey={workoutRefreshKey}
+                    onEdit={(log) => {
+                      setSelectedWorkout(log);
+                      setShowAddWorkout(true);
+                    }}
+                    onDeleted={() => {
+                      setWorkoutRefreshKey((value) => value + 1);
+                    }}
+                  />
+                )}
               </div>
             </section>
           )}
@@ -372,6 +412,27 @@ const styles = {
     color: '#0058bc',
     cursor: 'pointer',
     fontWeight: 700,
+  },
+  addWorkoutBtn: {
+    border: '1px solid #d4ff00',
+    borderRadius: 999,
+    padding: '8px 16px',
+    backgroundColor: '#d4ff00',
+    color: '#5f7400',
+    cursor: 'pointer',
+    fontWeight: 700,
+    fontSize: '13px',
+    boxShadow: '0 4px 10px rgba(212, 255, 0, 0.2)',
+  },
+  backButton: {
+    border: '1px solid #e8ead4',
+    borderRadius: 999,
+    padding: '8px 16px',
+    backgroundColor: '#f4f5df',
+    color: '#536600',
+    cursor: 'pointer',
+    fontWeight: 700,
+    fontSize: '13px',
   },
 };
 

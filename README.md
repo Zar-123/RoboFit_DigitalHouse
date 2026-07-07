@@ -137,10 +137,10 @@ La aplicación cliente estará lista para usar en `http://localhost:5173/`.
 *   **Gestión Flexible**: Capacidad completa de creación, lectura, edición y borrado (CRUD) para registros de sesiones y rutinas internas.
 
 
-## Capturas de Pantalla : 
-Iniicio:
+## Capturas de Pantalla : <br>
+### Inicio: <br>
 <img width="864" height="553" alt="image" src="https://github.com/user-attachments/assets/e46a465b-36ae-49cc-b105-d023fe320d91" />
 
-Sesiones:
+### Sesiones: <br>
 <img width="859" height="600" alt="image" src="https://github.com/user-attachments/assets/7a4d152e-68e9-43f6-83dd-523f278c3e24" />
 

@@ -135,3 +135,12 @@ La aplicación cliente estará lista para usar en `http://localhost:5173/`.
 *   **Landing Page Deportiva e Interactiva**: Sección Hero con diseño editorial de alto rendimiento, tarjetas de ejercicios de demostración dinámicas e indicadores visuales de consistencia.
 *   **Carga Rápida en el Gimnasio**: Formularios optimizados para el uso móvil (responsive design), facilitando el logueo de ejercicios y series durante los descansos entre sets.
 *   **Gestión Flexible**: Capacidad completa de creación, lectura, edición y borrado (CRUD) para registros de sesiones y rutinas internas.
+
+
+## Capturas de Pantalla : 
+Iniicio:
+<img width="864" height="553" alt="image" src="https://github.com/user-attachments/assets/e46a465b-36ae-49cc-b105-d023fe320d91" />
+
+Sesiones:
+<img width="859" height="600" alt="image" src="https://github.com/user-attachments/assets/7a4d152e-68e9-43f6-83dd-523f278c3e24" />
+

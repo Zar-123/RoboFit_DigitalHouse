@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import workoutLogsService from '../services/workoutLogs.service.js';
+import { normalizeDateValue } from '../utils/date.js';
 
 const initialForm = {
   exercise: '',
@@ -27,7 +28,7 @@ function WorkoutLogsForm({ selectedWorkout, onSaved, onCancel, sesionId }) {
       reps: selectedWorkout.reps ?? '',
       weight: selectedWorkout.weight ?? '',
       duration: selectedWorkout.duration ?? '',
-      date: selectedWorkout.date ? selectedWorkout.date.slice(0, 10) : '',
+      date: normalizeDateValue(selectedWorkout.date),
     });
   };
 
@@ -58,7 +59,7 @@ function WorkoutLogsForm({ selectedWorkout, onSaved, onCancel, sesionId }) {
         reps: Number(formData.reps),
         weight: Number(formData.weight),
         duration: Number(formData.duration),
-        date: formData.date,
+        date: normalizeDateValue(formData.date),
       };
 
       if (selectedWorkout) {

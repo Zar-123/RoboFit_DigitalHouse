@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import sesionesService from '../services/sesiones.service.js';
+import { formatDisplayDate } from '../utils/date.js';
 import WorkoutLogsForm from './WorkoutLogsForm.jsx';
 import WorkoutLogsList from './WorkoutLogsList.jsx';
 
@@ -104,7 +105,7 @@ function SesionList({ refreshKey = 0, onEdit, onDeleted, onVerWorkouts }) {
                   </div>
                   <div style={styles.detail}>
                     <span style={styles.detailLabel}>Fecha</span>
-                    {item.fecha ? new Date(item.fecha.slice(0, 10).replace(/-/g, '/')).toLocaleDateString() : '-'}
+                    {formatDisplayDate(item.fecha)}
                   </div>
                 </div>
                 <div style={styles.actions}>

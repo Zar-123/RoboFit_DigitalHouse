@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import sesionesService from '../services/sesiones.service.js';
+import { normalizeDateValue } from '../utils/date.js';
 
 const initialForm = {
   nombre: '',
@@ -25,7 +26,7 @@ function SesionForm({ selectedSesion = null, onSaved, onCreated, onCancel }) {
       deporte: selectedSesion.deporte || '',
       duracionMinutos: selectedSesion.duracionMinutos ?? '',
       nivel: selectedSesion.nivel || '',
-      fecha: selectedSesion.fecha ? selectedSesion.fecha.slice(0, 10) : '',
+      fecha: normalizeDateValue(selectedSesion.fecha),
     });
   };
 
@@ -49,7 +50,7 @@ function SesionForm({ selectedSesion = null, onSaved, onCreated, onCancel }) {
         deporte: formData.deporte,
         duracionMinutos: Number(formData.duracionMinutos),
         nivel: formData.nivel,
-        fecha: formData.fecha,
+        fecha: normalizeDateValue(formData.fecha),
       };
 
       if (selectedSesion) {

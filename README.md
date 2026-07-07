@@ -32,7 +32,7 @@ El proyecto está construido con un enfoque moderno, robusto y eficiente:
 El proyecto está organizado en un **monorepo** limpio con dos áreas bien definidas para desacoplar el cliente del servidor:
 
 ```text
-robofi_backend/
+robofit/
 ├── backend/               # Servidor API Express + Supabase SDK
 │   ├── src/
 │   │   ├── controllers/   # Controladores con lógica del CRUD para sesiones y registros
